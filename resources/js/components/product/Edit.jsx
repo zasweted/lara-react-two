@@ -1,10 +1,12 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const New = () => {
+const Edit = () => {
 
-        const navigate = useNavigate()
+
+        const navigate = useNavigate();
+        const { id } = useParams();
 
         const [name, setName] = useState('');
         const [description, setDescription] = useState('');
@@ -12,69 +14,46 @@ const New = () => {
         const [type, setType] = useState('');
         const [price, setPrice] = useState('');
         const [quantity, setQuantity] = useState('');
-    
-        const changeHandler = (e) => {
+        const [avatar, setAvatar] = useState(true);
 
-        let file = e.target.files[0]
-        let reader = new FileReader()
-        let limit = 2024 * 2024 * 4
-        if(file['size'] > limit) {
-            Swal.fire({
-                type: 'error',
-                title: 'Ooops....',
-                text: 'Something Went Wrong',
-                footer: 'Why do i have this issue?',
+        useEffect(()=> {
+            getProduct()
+        }, [])
+
+        const getProduct = async () => {
+            await axios.get(`/api/get_edit_product/${id}`)
+            .then(({data})=>{
+                const { name, description, image, type, quantity, price } = data.product
+                setName(name)
+                setDescription(description)
+                setImage(image)
+                setType(type)
+                setQuantity(quantity)
+                setPrice(price)
+            })
+            .catch(({response:{data}})=>{
 
             })
         }
-        reader.onloadend = (file) => {
-            setImage(reader.result)
-        }
-        reader.readAsDataURL(file)
-     }
 
-     const createProduct = async (e) => {
-        e.preventDefault()
-        const formData = new FormData()
-        formData.append('name', name)
-        formData.append('description', description)
-        formData.append('image', image)
-        formData.append('type', type)
-        formData.append('quantity', quantity)
-        formData.append('price', price)
+        return(
 
-        await axios.post("/api/add_product/", formData)
-        .then(({data})=>{
-            toast.fire({
-                icon:"success",
-                title: "Product added successfully"
-            })
-            navigate("/")
-        })
-        .catch(({response})=>{
-
-        })
-     }
-     
-
-    return(
-
-        <>
-            <div className="container">
-                <div className="products-create">
+            <>
+                <div className="container">
+                    <div className="product-edit">
                     <div className="titlebar">
                         <div className="titlebar-item">
-                            <h1>Add Product</h1>
+                            <h1>Edit Product</h1>
                         </div>
                         <div className="titlebar-item">
-                            <button className="btn" onClick={(e)=> createProduct(e)}>Save</button>
+                            <button className="btn" >Save</button>
                         </div>
                     </div>
                     <div className="card-wrapper">
                         <div className="wrapper-left">
                             <div className="card">
                                 <p>Name</p>
-                                <input type="text" name="name" value={name} onChange={(e)=>{setName(e.target.value)}} />
+                                <input type="text" name="name" value={name} onChange={(e)=>{setName(e.target.value)}}  />
 
                                 <p>Description</p>
                                 <textarea name="description" cols="10" rows ="5" value={description} onChange={(e)=>{setDescription(e.target.value)}}></textarea>
@@ -89,7 +68,7 @@ const New = () => {
                                         <li className="image-item">
                                             <form className="image-item-form">
                                                 <label className="image-item-form--label">Add Image</label>
-                                                <input type="file" name="image" className="image-item-form--input" onChange={changeHandler}/>
+                                                <input type="file" name="image" className="image-item-form--input" />
                                             </form>
                                         </li>
                                     </div>
@@ -99,7 +78,7 @@ const New = () => {
                         <div className="wrapper-right">
                             <div className="card">
                                 <p>Product Type</p>
-                                <input type="text" name="type" value={type} onChange={(e)=>{setType(e.target.value)}} />
+                                <input type="text" name="type" value={type} onChange={(e)=>{setType(e.target.value)}}  />
 
                                 <div className="hr"></div>
                                 
@@ -109,7 +88,7 @@ const New = () => {
                                 <div className="hr"></div>
 
                                 <p>Price</p>
-                                <input type="number" name="price" value={price} onChange={(e)=>{setPrice(e.target.value)}} />
+                                <input type="number" name="price" value={price} onChange={(e)=>{setPrice(e.target.value)}}  />
 
                                 <div className="br"></div>
                             </div>
@@ -120,16 +99,14 @@ const New = () => {
 
                         </div>
                         <div className="titlebar-item">
-                            <button className="btn" onClick={(e)=> createProduct(e)}>Save</button>
+                            <button className="btn" >Save</button>
                         </div>
                     </div>
+                    </div>
                 </div>
-            </div>
-            
-        </>
+            </>
 
-    )
-
+        )
 }
 
-export default New;
+export default Edit;
