@@ -39,4 +39,18 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::find($id);
+
+        $product->update([
+            'name' => $request->name,
+                'description' => $request->description,
+                'image' => $product->updateImage($request->image, $product->image),
+                'type' => $request->type,
+                'quantity' => $request->quantity,
+                'price' => $request->price
+        ]);
+    }
+
 }

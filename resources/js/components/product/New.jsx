@@ -35,7 +35,9 @@ const New = () => {
 
      const createProduct = async (e) => {
         e.preventDefault()
+
         const formData = new FormData()
+        
         formData.append('name', name)
         formData.append('description', description)
         formData.append('image', image)
